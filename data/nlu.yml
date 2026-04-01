@@ -1,0 +1,26 @@
+version: "3.1"
+
+nlu:
+- intent: check_attendance
+  examples: |
+    - I want to check my attendance
+    - What is my attendance?
+    - check attendance for [S101](student_id)
+    - my id is [S102](student_id)
+    - my pin is [1234](student_pin)
+    - [S105](student_id)
+    - [9876](student_pin)
+- regex: student_id
+  examples: |
+    - ^[sS]\d{3}$   # Matches S101, s202, S999
+- regex: student_pin
+  examples: |
+    - ^\d{4}$  
+- intent: inform
+  examples: |
+    - my id is [S101](student_id)
+    - [S102](student_id)
+    - my pin is [1234](student_pin)
+    - [5566](student_pin)
+    - pin [0987](student_pin)
+    - use [4321](student_pin)
