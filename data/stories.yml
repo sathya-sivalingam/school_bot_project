@@ -1,0 +1,15 @@
+version: "3.1"
+
+stories:
+- story: check attendance flow
+  steps:
+  - intent: check_attendance          # User says: "I want to check attendance"
+  - action: utter_ask_student_id      # Bot asks: "What is your Student ID?"
+  - intent: inform                    # User says: "My ID is S101" (Extracting student_id)
+  - slot_was_set:
+      - student_id: "S101"
+  - action: utter_ask_student_pin     # Bot asks: "Please enter your PIN."
+  - intent: inform                    # User says: "1234" (Extracting student_pin)
+  - slot_was_set:
+      - student_pin: "1234"
+  - action: action_fetch_attendance    # Bot runs Python code to check DB
