@@ -1,0 +1,35 @@
+version: "3.1"
+
+intents:
+  - check_attendance
+  - nlu_fallback
+  - out_of_scope
+  - inform
+
+entities:
+  - student_id
+  - student_pin
+
+slots:
+  student_id:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: student_id
+
+  student_pin:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: student_pin
+
+responses:
+  utter_ask_student_id:
+    - text: "Please enter your Student ID (e.g., S101)."
+  utter_ask_student_pin:
+    - text: "Please enter your 4-digit security PIN."
+
+actions:
+  - action_fetch_attendance

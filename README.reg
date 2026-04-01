@@ -1,0 +1,99 @@
+Certainly! A professional `README.md` is essential for any technical school project. It explains the "Why," "What," and "How" to your instructors.
+
+You can save the following content as a file named **README.md** in your project's root folder.
+
+---
+
+# 🎓 School Assistant: AI-Powered Attendance Bot
+An intelligent chatbot built with **Rasa**, **Python**, and **SQLite** that allows students to securely check their attendance records through a web-based interface.
+
+## 🚀 Overview
+This project demonstrates a full-stack AI implementation. It uses Natural Language Understanding (NLU) to process student queries, a custom Python action server to query a secure SQL database, and a Flask-based middleware to serve a modern web frontend.
+
+## 🛠️ Tech Stack
+* **Conversational AI:** [Rasa Framework](https://rasa.com/) (NLU & Dialogue Management)
+* **Backend:** Python 3.x
+* **Web Framework:** Flask (API Gateway)
+* **Database:** SQLite3
+* **Frontend:** HTML5, CSS3, JavaScript (Vanilla)
+
+## 📂 Project Structure
+* `/actions`: Contains `actions.py` which holds the Python logic for database connectivity.
+* `/data`: NLU training data and conversation stories.
+* `/templates`: The HTML frontend for the chat interface.
+* `app.py`: The Flask server that bridges the web UI and the Rasa model.
+* `school_database.db`: The SQL storage for student records.
+
+## 🔐 Key Features
+1.  **Natural Language Support:** Students can ask for attendance in plain English (e.g., "Tell me my attendance").
+2.  **Secure Authentication:** The bot requires a **Student ID** and a **4-digit PIN** before revealing sensitive data.
+3.  **Real-time Database Integration:** Fetches live data from a SQL table.
+4.  **Responsive Web UI:** A clean, school-branded chat window.
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1. Prerequisites
+Ensure you have Python 3.8+ installed. Install the required dependencies:
+```bash
+pip install rasa flask flask-cors requests
+```
+
+### 2. Initialize the Database
+Run the setup script to create the SQLite database and sample records:
+```bash
+python setup_db.py
+```
+
+### 3. Train the AI Model
+```bash
+rasa train
+```
+
+---
+
+## 🏃 How to Run the Project
+To run the full system, open **three separate terminals** in the project directory:
+
+**Terminal 1: Action Server**
+```bash
+rasa run actions
+```
+
+**Terminal 2: Rasa API Server**
+```bash
+rasa run --enable-api --cors "*"
+```
+
+**Terminal 3: Flask Web Gateway**
+```bash
+python app.py
+```
+
+**Access the Bot:**
+Open your browser and navigate to `http://localhost:8000`.
+
+---
+
+## 📝 Example Conversation
+> **User:** Hi, I want to check my attendance.
+>
+> **Bot:** I can help with that! Please provide your Student ID.
+>
+> **User:** S101
+>
+> **Bot:** Thanks. Now please enter your 4-digit security PIN.
+>
+> **User:** 1234
+>
+> **Bot:** Identity Verified. Alice, your attendance is 92.5%.
+
+---
+
+## 🛡️ Security Implementation
+To prevent unauthorized access, the system uses **parameterized SQL queries** to prevent SQL injection and clears the `student_pin` slot from the bot's memory immediately after the database check is performed.
+
+---
+
+**Would you like me to add a section on "Future Enhancements" (like adding SMS notifications) to make the project look even more ambitious?**
