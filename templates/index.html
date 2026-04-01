@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Attendance Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #chat-container {
+            width: 400px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #header {
+            background: #004a99;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+            font-size: 14px;
+        }
+
+        .user-msg {
+            background: #004a99;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-msg {
+            background: #e4e6eb;
+            color: #050505;
+            align-self: flex-start;
+        }
+
+        #input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #user-input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            outline: none;
+        }
+
+        #send-btn {
+            background: #004a99;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-left: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="chat-container">
+        <div id="header">School Assistant: Attendance Check</div>
+        <div id="chat-box"></div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type Student ID (e.g. S101)...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        async function sendMessage() {
+            const text = userInput.value;
+            if (!text) return;
+
+            // Display user message
+            appendMessage(text, 'user-msg');
+            userInput.value = '';
+
+            try {
+                // This tells the browser to send the message to your Flask app on port 8000
+                const response = await fetch('http://localhost:8000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, sender: "student_user" })
+                });
+                const data = await response.json();
+
+                // Display bot responses
+                data.forEach(msg => {
+                    if (msg.text) appendMessage(msg.text, 'bot-msg');
+                });
+            } catch (err) {
+                appendMessage("Error: Could not connect to the school server.", 'bot-msg');
+            }
+        }
+
+        function appendMessage(text, className) {
+            const chatBox = document.getElementById('chat-box');
+
+            // Create the message container
+            const div = document.createElement('div');
+            div.className = 'bot-message-container';
+
+            // The actual text bubble
+            const textBubble = `<div class="bot-text">${text}</div>`;
+
+            // The Action Bar (Like, Dislike, Copy, Reload)
+            const actionBar = `
+                <div class="message-actions">
+                    <button class="action-btn" onclick="likeMessage(this)">👍 Like</button>
+                    <button class="action-btn" onclick="dislikeMessage(this)">👎 Dislike</button>
+                    <button class="action-btn" onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')">📋 Copy</button>
+                    <button class="action-btn" onclick="reloadConversation()">🔄 Reload</button>
+                </div>
+            `;
+            
+          //div.className = `message ${className}`;
+            div.innerHTML = textBubble + actionBar;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Function Logic
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert("Copied to clipboard!");
+        }
+
+        function reloadConversation() {
+            // Sends the /restart intent to Rasa to reset the backend state
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: "/restart" })
+            }).then(() => {
+                location.reload(); // Refresh the page for a clean UI
+            });
+        }
+
+        function likeMessage(btn) {
+            btn.style.color = "green";
+        }
+
+        function dislikeMessage(btn) {
+            btn.style.color = "red";
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    </script>
+
+</body>
+
+</html>
